@@ -10,10 +10,8 @@
 class display {
 
   public:
-
     display(int width, int height);
-
-
+    
     void init();
 
     ~display();
@@ -27,7 +25,4 @@ class display {
 };
 
 
-
-
-
-#endif
+#endif /* __DISPLAY__ */
