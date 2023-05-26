@@ -1,10 +1,25 @@
-SRC = main.cpp display.cpp
-
+SRC = main.cpp display.cpp grid.cpp
+OBJ = $(SRC:.cpp=.o)
 CC = g++
+CFLAGS = -c
+LFLAGS = -lSDL2 -lSDL2_gfx
+EXECUTABLE = out
 
-CFlags = -w -g
 
-LFlags = -lSDL2 -lSDL2_gfx
+all: $(SRC) $(EXECUTABLE)
 
-all: $(SRC) 
-	$(CC) $(SRC) $(CFlags) $(LFlags) -o out
+$(EXECUTABLE):$(OBJ)
+	$(CC) $(OBJ) -o $(EXECUTABLE) $(LFLAGS)
+	./out
+	clear
+
+
+.cpp.o:
+	$(CC) $(CFLAGS) $< -o $@
+
+
+clean:
+	rm -f $(OBJ) $(EXECUTABLE)
+	clear
+
+

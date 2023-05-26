@@ -4,24 +4,33 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 
-#define SCREEN_WIDTH 480
-#define SCREEN_HEIGHT 640
+#define SCREEN_WIDTH 720
+#define SCREEN_HEIGHT 800
+
+#include "grid.h"
 
 class display {
 
   public:
     display(int width, int height);
-    
+
     void init();
 
     ~display();
 
   private:
+    void clearScreen();
+
     int screenWidth;
     int screenHeight;
 
+    int windowXpos;
+    int windowYpos;
+
     SDL_Window* window;
     SDL_Surface* screenSurface;
+    SDL_Renderer* renderer;
+    grid tetrisGrid;
 };
 
 
