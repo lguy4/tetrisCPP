@@ -1,0 +1,18 @@
+for each new generated tetrimino, a new tetrimino object is generated; when the piece lands, the status array
+is updated and then the corresponding tetrimino object is deleted from memory;
+
+correspond each active tetrimino with a drawing method perhaps in the display class.
+
+create a separate class to handle game logic [**done**]
+
+
+test: 
+
+  -stack horizontal I tetriminos
+  -stack vertical I tetriminos
+
+
+last second maneuvers:
+  when a tetrimino lands on another tetrimino, if a maneuver is attempted (left or right or rotate), 
+  set a counter to restrict the amount of maneuvers otherwise player will be able to perform last second maneuvers
+  perpetually

@@ -7,7 +7,8 @@
 
 
 
-display::display(int width, int height) {
+display::display(int width, int height){
+  
   this->screenWidth = width;
   this->screenHeight = height;
 
@@ -19,13 +20,6 @@ display::display(int width, int height) {
   this->renderer = NULL;
 }
 
-
-void display::clearScreen() {
-  SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff); 
-  SDL_Rect background = {0, 0, 720, 800};
-  SDL_RenderFillRect(renderer, &background);
-  SDL_RenderPresent( this->renderer );
-}
 
 
 void display::init() {
@@ -52,39 +46,28 @@ void display::init() {
 
         SDL_Event e;
         bool quit = false;
-        int delay = CLOCKS_PER_SEC;
+
+        // initial state
+        controller.drawGrid(renderer);
+        controller.drawCurrentPiece(renderer);
+        SDL_RenderPresent(renderer);
 
 
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-        int y_idx = 0;
+        //SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
         while(quit == false) {
           
-
+          controller.delay(500);
 
           while(SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) {
               quit = true;
             }
           }
-
-          // game loop
-
-          if (y_idx < 20) {
-            tetrisGrid.gridInit(renderer);
-            tetrisGrid.fillGridSquare(2, y_idx, renderer);
-
-            SDL_RenderPresent( this->renderer );
-            clock_t clockStart = clock();
-            while(clock() - clockStart < delay/2);
-            
-            if (y_idx < 19) clearScreen();
-
-            y_idx += 1;
-          }
-            
-
-
+          
+          controller.updateState(renderer);
+          
+          
         }
 
       }

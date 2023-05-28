@@ -1,7 +1,7 @@
-SRC = main.cpp display.cpp grid.cpp
+SRC = main.cpp display.cpp gameControl.cpp grid.cpp tetrimino.cpp
 OBJ = $(SRC:.cpp=.o)
 CC = g++
-CFLAGS = -c
+CFLAGS = -g -c
 LFLAGS = -lSDL2 -lSDL2_gfx
 EXECUTABLE = out
 
