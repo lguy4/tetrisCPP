@@ -5,11 +5,12 @@
 
 class tetrimino{
 
+ 
+
   public:
     tetrimino();
-    tetrimino(int type);
-
-    void updatePosition(int newPivotX, int newPivotY);
+     ~tetrimino();
+    //void updatePosition(int newPivotX, int newPivotY);
     void rotateCW();
 
     int type;
@@ -19,6 +20,9 @@ class tetrimino{
     // x and y coordinates of canvas refers to topleft corner of canvas i.e. (0, 0)
     int canvasX;
     int canvasY;
+
+    int* piecesX;
+    int* piecesY;
 
     int getTetriminoUnit(int type, int rotation, int offsetX, int offsetY);
 

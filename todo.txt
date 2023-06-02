@@ -7,9 +7,11 @@ create a separate class to handle game logic [**done**]
 
 
 test: 
-
+  -check space occupancy
   -stack horizontal I tetriminos
   -stack vertical I tetriminos
+
+  
 
 
 last second maneuvers:

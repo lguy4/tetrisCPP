@@ -11,7 +11,7 @@ all: $(SRC) $(EXECUTABLE)
 $(EXECUTABLE):$(OBJ)
 	$(CC) $(OBJ) -o $(EXECUTABLE) $(LFLAGS)
 	./out
-	clear
+#clear
 
 
 .cpp.o:

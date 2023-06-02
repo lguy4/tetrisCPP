@@ -11,6 +11,9 @@
 #define SCREEN_WIDTH 720
 #define SCREEN_HEIGHT 800
 
+#define CANVAS_ORIGIN_X 3
+#define CANVAS_ORIGIN_Y 19
+
 class gameControl{
 
   public:
@@ -23,7 +26,9 @@ class gameControl{
     void clearScreen(SDL_Renderer *renderer);
     void drawGrid(SDL_Renderer *renderer);
     void fillGridSquare(int type, int x_idx, int y_idx, SDL_Renderer *renderer);
-    void delay(int milliseconds);
+    //void delay(int milliseconds);
+
+    void generateNewPiece();
 
     /**
      *  Update state of both grid and active tetrimino.
@@ -31,11 +36,17 @@ class gameControl{
      *  Refresh display with new frame.
      * 
     */
-
+    void recordLandedPiece();
+    void renderOccupiedSquares(SDL_Renderer* renderer);
     void drawCurrentPiece(SDL_Renderer *renderer);
-    
-    void updateState(SDL_Renderer *renderer);
-    bool landedPiece;
+    bool checkValidPositionX(int x, int y);
+    bool checkValidPositionY(int x, int y);
+    //bool checkForLanding(int x, int y);
+
+    bool validNextPositionXR;
+    bool validNextPositionXL;
+    bool validNextPositionY;
+    bool quit;
     
   private:
     grid tetrisGrid;

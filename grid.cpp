@@ -9,7 +9,7 @@ grid::grid() {
   }
 
   gridX = GRID_X;
-  gridY= GRID_Y;
+  gridY = GRID_Y;
   gridWidth = GRID_WIDTH;
   gridHeight = GRID_HEIGHT;
 

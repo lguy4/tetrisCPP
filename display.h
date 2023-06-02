@@ -9,9 +9,12 @@ class display {
   public:
     display(int width, int height);
 
-    void init();
+    bool init();
 
     ~display();
+
+    gameControl controller;
+    SDL_Renderer* renderer;
 
   private:
     int screenWidth;
@@ -22,10 +25,10 @@ class display {
 
     SDL_Window* window;
     SDL_Surface* screenSurface;
-    SDL_Renderer* renderer;
+    
 
     
-    gameControl controller;
+    
 };
 
 

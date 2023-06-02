@@ -22,18 +22,20 @@ display::display(int width, int height){
 
 
 
-void display::init() {
+bool display::init() {
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     printf("SDL Initialization Error: %s", SDL_GetError());
+    return false;
   } else {
-
     this->window = SDL_CreateWindow(
       "Tetris", this->windowXpos, this->windowYpos, 
       this->screenWidth, this->screenHeight, SDL_WINDOW_SHOWN);
 
     if (this->window == NULL) {
       printf("SDL Window Initialization Error: %s", SDL_GetError());
+      return false;
     } else {
+
       this->screenSurface = SDL_GetWindowSurface(this->window);
       SDL_FillRect(this->screenSurface, NULL, SDL_MapRGB(this->screenSurface->format, 0x00, 0x00, 0x00));
       SDL_UpdateWindowSurface(this->window);
@@ -42,33 +44,10 @@ void display::init() {
 
       if (this->renderer == NULL) {
         printf("SDL Renderer Initialization Error: %s", SDL_GetError());
+        return false;
       } else {
 
-        SDL_Event e;
-        bool quit = false;
-
-        // initial state
-        controller.drawGrid(renderer);
-        controller.drawCurrentPiece(renderer);
-        SDL_RenderPresent(renderer);
-
-
-        //SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-
-        while(quit == false) {
-          
-          controller.delay(500);
-
-          while(SDL_PollEvent(&e) != 0) {
-            if (e.type == SDL_QUIT) {
-              quit = true;
-            }
-          }
-          
-          controller.updateState(renderer);
-          
-          
-        }
+        return true;
 
       }
 
@@ -77,7 +56,6 @@ void display::init() {
 }
 
 display::~display() {
-  printf("Ending Session...\n");
   SDL_DestroyRenderer(this->renderer);
   SDL_DestroyWindow(this->window);
   SDL_Quit();

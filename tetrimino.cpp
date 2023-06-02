@@ -193,14 +193,15 @@ int O_tetrimino[4][4][4] = {
 };
 
 tetrimino::tetrimino() {
+  piecesX = new int[4];
+  piecesY = new int[4];
 }
 
 
 
-tetrimino::tetrimino(int x):type(x) {}
 
 void tetrimino::rotateCW() {
-  if (this->rotationalState < TETRIMINO_DIMENSION) {
+  if (this->rotationalState < TETRIMINO_DIMENSION-1) {
     this->rotationalState += 1;
   } else {
     this->rotationalState = 0;
@@ -227,4 +228,10 @@ int tetrimino::getTetriminoUnit(int type, int rotation, int offsetX, int offsetY
   default:
     return 0;
   }
+}
+
+
+tetrimino::~tetrimino() {
+  delete piecesX;
+  delete piecesY;
 }

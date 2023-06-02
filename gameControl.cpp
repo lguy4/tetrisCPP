@@ -1,20 +1,26 @@
 #include "gameControl.h"
 
+#define TEST_TYPE 1
+#define TEST_ROT 0
+
 
 gameControl::gameControl() {
-  landedPiece = false;
+  validNextPositionXR = true;
+  validNextPositionXL = true;
+  validNextPositionY = true;
 
-  currentPiece.type = 1;
-  currentPiece.rotationalState = 0;
-  currentPiece.canvasX = 3;
-  currentPiece.canvasY = 19;
+  currentPiece.type = TEST_TYPE;//(rand() % 7) + 1;
+  currentPiece.rotationalState = TEST_ROT;
+  currentPiece.canvasX = CANVAS_ORIGIN_X;
+  currentPiece.canvasY = CANVAS_ORIGIN_Y;
 }
+
+
 
 void gameControl::clearScreen(SDL_Renderer *renderer) {
   SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff); 
   SDL_Rect background = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
   SDL_RenderFillRect(renderer, &background);
-  SDL_RenderPresent(renderer);
 }
 
 
@@ -113,20 +119,27 @@ void gameControl::fillGridSquare(int type, int x_idx, int y_idx, SDL_Renderer *r
 }
 
 
-void gameControl::delay(int milliseconds) {
-  int CLOCKS_PER_mSEC = CLOCKS_PER_SEC / 1000;
-  int delay = milliseconds*CLOCKS_PER_mSEC;
-  clock_t clockStart = clock();
-  while(clock() - clockStart < delay);
+bool gameControl::checkValidPositionX(int x, int y) {
+  bool xCondition = (x >= 0) && (x < 10);
+  int idx = 10*y + x;
+  bool freeSquare = tetrisGrid.statusArray[idx] == 0;
+  return xCondition && freeSquare;
 }
 
+bool gameControl::checkValidPositionY(int x, int y) {
+  bool yCondition = (y >= 0) && (y < 20);
+  int idx = 10*y + x;
+  bool freeSquare = tetrisGrid.statusArray[idx] == 0;
 
+  return yCondition && freeSquare;
+}
 
 void gameControl::drawCurrentPiece(SDL_Renderer *renderer) {
   int x;
   int y;
-  int pieceCount;
   int unitValue;
+
+  int pieceCount = 0;
 
   bool xCondition;
   bool yCondition;
@@ -137,19 +150,20 @@ void gameControl::drawCurrentPiece(SDL_Renderer *renderer) {
       x = currentPiece.canvasX + j;
       y = currentPiece.canvasY - i;
 
-      xCondition = (0 <= x) && (x < 10);
-      yCondition = (0 <= y) && (y < 20);
-      if (pieceCount >= 4) {
-        return;
-      }
-
       unitValue = currentPiece.getTetriminoUnit(currentPiece.type, currentPiece.rotationalState, i, j);
       if (unitValue > 0) {
+
+        // check if space is available: if not, exit function.
+        if (!checkValidPositionX(x-1, y)) validNextPositionXL = false;
+        if (!checkValidPositionX(x+1, y)) validNextPositionXR = false;
+        if (!checkValidPositionY(x, y-1)) validNextPositionY = false;
+        // validNextPositionY = checkValidPositionY(x, y-1);
+
+        // record x and y position and store in "piecesX" and "piecesY";
+        // use for piece to piece collisions
+        currentPiece.piecesX[pieceCount] = x;
+        currentPiece.piecesY[pieceCount] = y;
         pieceCount += 1;
-        if (!(xCondition && yCondition)) {
-          this->landedPiece = true;
-          return;
-        }
         fillGridSquare(unitValue, x, y, renderer);
       }
     }
@@ -157,11 +171,38 @@ void gameControl::drawCurrentPiece(SDL_Renderer *renderer) {
 }
 
 
-void gameControl::updateState(SDL_Renderer *renderer) {
-  clearScreen(renderer);
-  currentPiece.canvasY -= 1;
-  drawGrid(renderer);
-  drawCurrentPiece(renderer);
-  SDL_RenderPresent(renderer);
+void gameControl::recordLandedPiece() {
+  for (int i = 0; i < 4; i += 1) {
+    int x_idx = currentPiece.piecesX[i];
+    int y_idx = currentPiece.piecesY[i];
+    int idx = 10*y_idx + x_idx;
+    tetrisGrid.statusArray[idx] = currentPiece.type;
+  }
+}
 
+void gameControl::renderOccupiedSquares(SDL_Renderer* renderer) {
+  for (int i = 0; i < 200; i += 1) {
+
+    int unitValue = tetrisGrid.statusArray[i];
+    if (unitValue > 0) {
+      
+      int x_idx = i % 10;
+      int y_idx = i / 10;
+
+      fillGridSquare(unitValue, x_idx, y_idx, renderer);
+
+    }
+  }
+}
+
+
+
+void gameControl::generateNewPiece() {
+  currentPiece.type = TEST_TYPE;//(rand() % 7) + 1;
+  currentPiece.rotationalState = TEST_ROT;
+  currentPiece.canvasX = CANVAS_ORIGIN_X;
+  currentPiece.canvasY = CANVAS_ORIGIN_Y;
+  validNextPositionXL = true;
+  validNextPositionXR = true;
+  validNextPositionY = true;
 }
