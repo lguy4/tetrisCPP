@@ -10,8 +10,6 @@ class tetrimino{
   public:
     tetrimino();
      ~tetrimino();
-    //void updatePosition(int newPivotX, int newPivotY);
-    void rotateCW();
 
     int type;
     int rotationalState;

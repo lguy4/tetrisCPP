@@ -5,15 +5,19 @@
 
 
 gameControl::gameControl() {
+
+  highestOccupiedRow = 0;
+
   validNextPositionXR = true;
   validNextPositionXL = true;
   validNextPositionY = true;
 
-  currentPiece.type = TEST_TYPE;//(rand() % 7) + 1;
-  currentPiece.rotationalState = TEST_ROT;
+  currentPiece.type = (rand() % 7) + 1;
+  currentPiece.rotationalState = 0;
   currentPiece.canvasX = CANVAS_ORIGIN_X;
   currentPiece.canvasY = CANVAS_ORIGIN_Y;
 }
+
 
 
 
@@ -70,33 +74,33 @@ void gameControl::fillGridSquare(int type, int x_idx, int y_idx, SDL_Renderer *r
     break;
 
   case 2:
-    fillColor[0] = 0x00; fillColor[1] = 0xff; fillColor[2] =  0xff;
-    borderColor[0] = 0x00; borderColor[1] = 0xcd; borderColor[2] = 0xff;
+    fillColor[0] = 0x61; fillColor[1] = 0x03; fillColor[2] =  0xfc;
+    borderColor[0] = 0x24; borderColor[1] = 0x02; borderColor[2] = 0x52;
     break;
 
   case 3:
-    fillColor[0] = 0x00; fillColor[1] = 0xff; fillColor[2] =  0xff;
-    borderColor[0] = 0x00; borderColor[1] = 0xcd; borderColor[2] = 0xff;
+    fillColor[0] = 0xff; fillColor[1] = 0x00; fillColor[2] =  0x00;
+    borderColor[0] = 0x5c; borderColor[1] = 0x01; borderColor[2] = 0x01;
     break;
 
   case 4:
-    fillColor[0] = 0x00; fillColor[1] = 0xff; fillColor[2] =  0xff;
-    borderColor[0] = 0x00; borderColor[1] = 0xcd; borderColor[2] = 0xff;
+    fillColor[0] = 0x00; fillColor[1] = 0xff; fillColor[2] =  0x00;
+    borderColor[0] = 0x00; borderColor[1] = 0x4a; borderColor[2] = 0x00;
     break;
 
   case 5:
-    fillColor[0] = 0x00; fillColor[1] = 0xff; fillColor[2] =  0xff;
-    borderColor[0] = 0x00; borderColor[1] = 0xcd; borderColor[2] = 0xff;
+    fillColor[0] = 0xed; fillColor[1] = 0xaf; fillColor[2] =  0x02;
+    borderColor[0] = 0xad; borderColor[1] = 0x80; borderColor[2] = 0x02;
     break;
 
   case 6:
-    fillColor[0] = 0x00; fillColor[1] = 0xff; fillColor[2] =  0xff;
-    borderColor[0] = 0x00; borderColor[1] = 0xcd; borderColor[2] = 0xff;
+    fillColor[0] = 0x00; fillColor[1] = 0x00; fillColor[2] =  0xff;
+    borderColor[0] = 0x00; borderColor[1] = 0x00; borderColor[2] = 0x6b;
     break;
 
   case 7:
-    fillColor[0] = 0x00; fillColor[1] = 0xff; fillColor[2] =  0xff;
-    borderColor[0] = 0x00; borderColor[1] = 0xcd; borderColor[2] = 0xff;
+    fillColor[0] = 0xf0; fillColor[1] = 0xec; fillColor[2] =  0x02;
+    borderColor[0] = 0xb0; borderColor[1] = 0xad; borderColor[2] = 0x02;
     break;
   
   default:
@@ -141,8 +145,6 @@ void gameControl::drawCurrentPiece(SDL_Renderer *renderer) {
 
   int pieceCount = 0;
 
-  bool xCondition;
-  bool yCondition;
 
   for (int i = 0; i < TETRIMINO_DIMENSION; i += 1) {
     for (int j = 0; j < TETRIMINO_DIMENSION; j += 1) {
@@ -163,6 +165,11 @@ void gameControl::drawCurrentPiece(SDL_Renderer *renderer) {
         // use for piece to piece collisions
         currentPiece.piecesX[pieceCount] = x;
         currentPiece.piecesY[pieceCount] = y;
+
+        // if (y > highestOccupiedRow) {
+        //   highestOccupiedRow = y;
+        // }
+
         pieceCount += 1;
         fillGridSquare(unitValue, x, y, renderer);
       }
@@ -175,6 +182,7 @@ void gameControl::recordLandedPiece() {
   for (int i = 0; i < 4; i += 1) {
     int x_idx = currentPiece.piecesX[i];
     int y_idx = currentPiece.piecesY[i];
+    if (y_idx > highestOccupiedRow) highestOccupiedRow = y_idx;
     int idx = 10*y_idx + x_idx;
     tetrisGrid.statusArray[idx] = currentPiece.type;
   }
@@ -195,11 +203,84 @@ void gameControl::renderOccupiedSquares(SDL_Renderer* renderer) {
   }
 }
 
+void gameControl::rotateCW() {
+  if (currentPiece.rotationalState < TETRIMINO_DIMENSION - 1) {
+    currentPiece.rotationalState += 1;
+  } else {
+    currentPiece.rotationalState = 0;
+  }
+}
 
+bool gameControl::checkValidRotation() {
+  int x;
+  int y;
+  int idx;
+  int unitValue;
+
+  for (int i = 0; i < TETRIMINO_DIMENSION; i += 1) {
+    for (int j = 0; j < TETRIMINO_DIMENSION; j += 1) {
+
+      x = currentPiece.canvasX + j;
+      y = currentPiece.canvasY - i;
+
+      int nextRoationalState = (currentPiece.rotationalState < TETRIMINO_DIMENSION - 1) ? currentPiece.rotationalState + 1 : 0;
+
+      unitValue = currentPiece.getTetriminoUnit(currentPiece.type, nextRoationalState, i, j);
+      if (unitValue > 0) {
+        
+        idx = 10*y + x;
+
+        if (tetrisGrid.statusArray[idx] > 0) {
+          return false;
+        }
+      }
+    }
+  }
+  return true;
+}
+
+bool gameControl::checkForCompleteRow(int y) {
+  int idx;
+  for (int x = 0; x < 10; x += 1) {
+    idx = 10*y + x;
+    if (tetrisGrid.statusArray[idx] == 0) 
+      return false; 
+  }
+  return true;
+}
+
+void gameControl::clearCompleteRows() {
+  int idx;
+  int idxShift;
+  for (int y = highestOccupiedRow; y >= 0; y -= 1) {
+    if (checkForCompleteRow(y)) {
+      for (int x = 0; x < 10; x += 1) {
+        idx = 10*y + x;
+        tetrisGrid.statusArray[idx] = 0;
+      }
+
+      if (y < highestOccupiedRow) {
+        for (int yShift = y+1; yShift <= highestOccupiedRow; yShift += 1) {
+          for (int x = 0; x < 10; x += 1) {
+            int tempIdx = 10*yShift + x;
+            int temp = tetrisGrid.statusArray[tempIdx];
+            tetrisGrid.statusArray[tempIdx] = 0;
+
+            idxShift = 10*(yShift - 1) + x;
+
+            tetrisGrid.statusArray[idxShift] = temp;
+          }
+        }
+        highestOccupiedRow -= 1;
+      }
+
+    }
+  }
+}
 
 void gameControl::generateNewPiece() {
-  currentPiece.type = TEST_TYPE;//(rand() % 7) + 1;
-  currentPiece.rotationalState = TEST_ROT;
+  currentPiece.type = (rand() % 7) + 1;
+  currentPiece.rotationalState = 0;
   currentPiece.canvasX = CANVAS_ORIGIN_X;
   currentPiece.canvasY = CANVAS_ORIGIN_Y;
   validNextPositionXL = true;

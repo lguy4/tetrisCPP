@@ -200,14 +200,6 @@ tetrimino::tetrimino() {
 
 
 
-void tetrimino::rotateCW() {
-  if (this->rotationalState < TETRIMINO_DIMENSION-1) {
-    this->rotationalState += 1;
-  } else {
-    this->rotationalState = 0;
-  }
-}
-
 int tetrimino::getTetriminoUnit(int type, int rotation, int offsetX, int offsetY) {
   switch (type)
   {

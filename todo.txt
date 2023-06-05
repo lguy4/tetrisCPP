@@ -14,7 +14,4 @@ test:
   
 
 
-last second maneuvers:
-  when a tetrimino lands on another tetrimino, if a maneuver is attempted (left or right or rotate), 
-  set a counter to restrict the amount of maneuvers otherwise player will be able to perform last second maneuvers
-  perpetually
+

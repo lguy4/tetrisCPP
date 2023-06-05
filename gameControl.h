@@ -26,8 +26,8 @@ class gameControl{
     void clearScreen(SDL_Renderer *renderer);
     void drawGrid(SDL_Renderer *renderer);
     void fillGridSquare(int type, int x_idx, int y_idx, SDL_Renderer *renderer);
-    //void delay(int milliseconds);
 
+    void rotateCW();
     void generateNewPiece();
 
     /**
@@ -41,7 +41,14 @@ class gameControl{
     void drawCurrentPiece(SDL_Renderer *renderer);
     bool checkValidPositionX(int x, int y);
     bool checkValidPositionY(int x, int y);
-    //bool checkForLanding(int x, int y);
+    
+    bool checkValidRotation();
+
+    bool checkForCompleteRow(int y);
+    
+    void clearCompleteRows();
+
+    int highestOccupiedRow;  
 
     bool validNextPositionXR;
     bool validNextPositionXL;
